@@ -496,10 +496,10 @@
         <p>All-in-One AI Content Writing Tool | Google E-E-A-T Optimized</p>
         <div style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:7px 16px;background:linear-gradient(135deg,rgba(52,211,153,0.18),rgba(96,165,250,0.12));border:1px solid rgba(52,211,153,0.45);border-radius:20px;font-size:12px;font-weight:700;color:#6ee7b7;letter-spacing:0.5px;">
             <span style="width:8px;height:8px;background:#34d399;border-radius:50%;box-shadow:0 0 8px #34d399;animation:pulse 1.6s ease-in-out infinite;"></span>
-            v2.1 — VALUE DENSITY MODE + AUTO KEY CLEAN
+            v2.2 — VALUE DENSITY + MODELS UPDATED (May 2026)
         </div>
         <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5;">
-            Latest fixes: word count strict ±5% · value substitution rules · API key auto-clean &amp; validation · masked key diagnostics
+            Latest fixes: Sonnet 4.6 / Opus 4.7 / Haiku 4.5 model IDs · word count strict ±5% · value substitution rules · API key auto-clean &amp; validation · masked key diagnostics
         </div>
         <br>
         <button class="btn btn-secondary" onclick="changeKey()" style="margin-top:12px;font-size:12px;padding:6px 14px;">Set / Change API Key</button>
@@ -1010,11 +1010,14 @@
         event.target.classList.add('active');
     }
 
-    // Model list — tries in order until one works
+    // Model list — tries in order until one works (verified May 2026 from Anthropic docs)
+    // Sonnet 4.6 is primary (best balance for content work)
+    // Opus 4.7 is quality fallback
+    // Haiku 4.5 is fast/cheap last resort
     const MODELS = [
-        'claude-sonnet-4-5-20250514',
-        'claude-3-7-sonnet-20250219',
-        'claude-3-5-sonnet-20241022'
+        'claude-sonnet-4-6',
+        'claude-opus-4-7',
+        'claude-haiku-4-5-20251001'
     ];
 
     async function callClaude(prompt, maxTokens) {
