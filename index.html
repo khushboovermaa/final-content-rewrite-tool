@@ -924,20 +924,65 @@
 
 <script>
     const API_ENDPOINT = "https://api.anthropic.com/v1/messages";
-    let savedKey = sessionStorage.getItem('anthropic_key') || '';
+
+    // Aggressively clean a key — strips ALL invisible/hidden characters that
+    // a normal .trim() misses (zero-width spaces, BOM, non-breaking spaces,
+    // control chars, smart quotes from password managers, etc.)
+    function cleanApiKey(raw) {
+        if (!raw) return '';
+        return String(raw)
+            .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')   // control chars
+            .replace(/[\u200B-\u200D\uFEFF]/g, '')           // zero-width + BOM
+            .replace(/[\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g, '')  // unicode spaces
+            .replace(/[\u2018\u2019\u201C\u201D]/g, '')      // smart quotes
+            .replace(/\s+/g, '')                              // any remaining whitespace
+            .trim();
+    }
+
+    function validateKey(key) {
+        if (!key) return 'No key provided.';
+        if (!key.startsWith('sk-ant-')) {
+            return 'Key must start with "sk-ant-" — yours starts with "' + key.substring(0, 8) + '". Make sure you copied an Anthropic key, not OpenAI (sk-...) or another service.';
+        }
+        if (key.length < 50) {
+            return 'Key looks too short (' + key.length + ' chars). Anthropic keys are usually 100+ characters. You may have copied only part of it.';
+        }
+        return null; // valid
+    }
+
+    function maskKey(key) {
+        if (!key || key.length < 14) return '[invalid]';
+        return key.substring(0, 10) + '...' + key.substring(key.length - 4) + ' (' + key.length + ' chars)';
+    }
+
+    // Re-clean the saved key on every load (in case it was saved corrupted earlier)
+    let savedKey = cleanApiKey(sessionStorage.getItem('anthropic_key') || '');
+    if (savedKey) sessionStorage.setItem('anthropic_key', savedKey);
 
     function getApiKey() {
         if (savedKey) return savedKey;
         const key = prompt('KEY: Enter your Anthropic API key:\n(Get one free at console.anthropic.com)\n\nIt will be remembered for this browser session only.');
         if (!key) throw new Error('API key is required to use this tool.');
-        savedKey = key.trim();
+        const cleaned = cleanApiKey(key);
+        const err = validateKey(cleaned);
+        if (err) throw new Error('Key looks wrong:\n\n' + err + '\n\nYou entered: ' + maskKey(cleaned));
+        savedKey = cleaned;
         sessionStorage.setItem('anthropic_key', savedKey);
         return savedKey;
     }
 
     function changeKey() {
         const key = prompt('Enter your Anthropic API key (console.anthropic.com):');
-        if (key) { savedKey = key.trim(); sessionStorage.setItem('anthropic_key', savedKey); alert('API key saved for this session.'); }
+        if (!key) return;
+        const cleaned = cleanApiKey(key);
+        const err = validateKey(cleaned);
+        if (err) {
+            alert('Key looks wrong:\n\n' + err + '\n\nYou entered: ' + maskKey(cleaned) + '\n\nKey was NOT saved. Click "Set / Change API Key" and try again.');
+            return;
+        }
+        savedKey = cleaned;
+        sessionStorage.setItem('anthropic_key', savedKey);
+        alert('API key saved for this session.\n\nUsing: ' + maskKey(savedKey));
     }
 
     function switchMainTab(event, tabName) {
@@ -999,13 +1044,20 @@
             const errType = errData.error?.type || '';
 
             if (response.status === 401) {
+                const sentKeyInfo = maskKey(key);
                 savedKey = '';
                 sessionStorage.removeItem('anthropic_key');
                 throw new Error(
                     'Authentication failed (401).\n\n' +
                     'API said: ' + msg + '\n\n' +
-                    'Please click "Set / Change API Key" and re-enter your key.\n' +
-                    'Make sure it starts with sk-ant- and has no extra spaces.'
+                    'Key that was sent: ' + sentKeyInfo + '\n\n' +
+                    'COMMON CAUSES:\n' +
+                    '1. Wrong key — verify at console.anthropic.com → Settings → API Keys\n' +
+                    '2. Key was revoked or deleted\n' +
+                    '3. Wrong workspace — Anthropic keys are workspace-specific\n' +
+                    '4. No credit balance — check console.anthropic.com → Billing\n' +
+                    '5. Hidden chars from copy-paste (we already auto-clean these)\n\n' +
+                    'NEXT STEP: Click "Set / Change API Key", then paste a FRESH copy directly from the Anthropic console (not from another tool or saved file).'
                 );
             }
 
