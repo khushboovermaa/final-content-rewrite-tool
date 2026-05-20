@@ -669,7 +669,7 @@
                 <div style="background:rgba(251,113,133,0.07);border:1px solid rgba(251,113,133,0.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;">
                     <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#fda4af;">
                         <input type="checkbox" id="matchWordCount" checked style="width:15px;height:15px;accent-color:#fb7185;">
-                        Match original word count per section — protects card/grid UI layout
+                        Match original word count per section (STRICT ±5%) — locks design layout, forces value substitution not paraphrasing
                     </label>
                     <div id="wordCountInfo" style="font-size:12px;color:#94a3b8;line-height:1.7;margin-top:8px;"></div>
                 </div>
@@ -1339,19 +1339,86 @@ Fill in 4 to 5 sectionsToRewrite entries for YOUR URL. Fill in one competitor ob
         // Word count blueprint block (shared by both modes)
         let wcBlock = '';
         if (matchWC && sections.length > 0) {
-            const list = sections.map(s => '  - "' + s.heading + '": ~' + s.wordCount + ' words').join('\n');
+            const list = sections.map(s => '  - "' + s.heading + '": ~' + s.wordCount + ' words (STRICT ±5%)').join('\n');
             wcBlock = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-WORD COUNT BLUEPRINT — CRITICAL (FOX DESIGN LAYOUT PROTECTION)
+WORD COUNT BLUEPRINT — SACRED (FIXED DESIGN LAYOUT PROTECTION)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-This page is inside a fixed card/grid design layout. If any section is longer or shorter than the blueprint, the design BREAKS.
+This page is inside a RIGID card/grid design layout. The layout cannot stretch. If any section runs longer or shorter than the blueprint, the design BREAKS.
 
-Total: ~${totalWords} words (±10%)
+Total: ~${totalWords} words (STRICT ±5%)
 Section targets:
 ${list}
 
-Match each section within ±10%. Tighten language if running long. Add a specific proof point if running short. Never pad. Never cut important content — compress phrasing instead.`;
+WORD COUNT IS LOCKED. Match each section within ±5% of the original — no exceptions. Do NOT expand. Do NOT pad. Do NOT compress meaning. Instead, SUBSTITUTE weaker words for stronger words per the Value Density Rules below. Same length, higher information content.`;
         }
+
+        // Value Density Rules — applied in both modes (same word count, more information per word)
+        const valueDensityBlock = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALUE DENSITY RULES — SAME WORD COUNT, MORE INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Word count is LOCKED. Design layout is rigid and cannot stretch. Within the fixed word budget, every weak word must be SUBSTITUTED for a stronger word that carries real information. Same length, denser content.
+
+This is the difference between a rewrite that adds value and one that just paraphrases. Paraphrasing keeps the same vague claims with different words. Value substitution keeps the same word count but trades vague words for specific data, named scenarios, and concrete outcomes.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUBSTITUTION TARGETS — apply throughout every section
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(1) ADJECTIVES → NUMBERS
+    ✗ "Higher-quality enquiries"      ✓ "28–35% reply rates"
+    ✗ "Faster results"                ✓ "Live in 48 hours"
+    ✗ "Significant improvement"       ✓ "40% lower CPL"
+    ✗ "Better ROAS"                   ✓ "4.2× ROAS in 90 days"
+
+(2) VAGUE VERBS → SPECIFIC ACTIONS WITH TIMEFRAMES
+    ✗ "We optimize campaigns"         ✓ "Daily bid adjustments by 6am"
+    ✗ "Immediate visibility"          ✓ "Page 1 in 7 days"
+    ✗ "Continuously improve"          ✓ "Weekly A/B copy testing"
+
+(3) GENERIC CLAIMS → NAMED SCENARIOS, SEGMENTS, OR VERTICALS
+    ✗ "Budget-efficient setup"        ✓ "Profitable from ₹50k/month"
+    ✗ "Multiple industries served"    ✓ "BFSI, SaaS, healthcare, retail"
+    ✗ "Local targeting"               ✓ "Pin-code radius targeting"
+
+(4) FEATURE DESCRIPTIONS → OUTCOMES WITH METRICS
+    ✗ "Peak-hour visibility"          ✓ "7–10pm bid intensification"
+    ✗ "Quality Score optimization"    ✓ "Quality Scores from 5 to 8+"
+    ✗ "Retargeting campaigns"         ✓ "Cart recovery: 12–18% of exits"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+THE DECORATION TEST — apply to every single word
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+For every word, ask: "Is this carrying information, or is it decorative?" If decorative — CUT IT. Use the freed word slot for a number, a timeframe, a segment name, a specific tactic, or a named tool.
+
+WORDS THAT ARE ALMOST ALWAYS DECORATION — cut and substitute:
+seamlessly, comprehensive, robust, holistic, dynamic, innovative, leading, top, best-in-class, cutting-edge, world-class, premium, ultimate, perfect, exceptional, unparalleled, unmatched, superior, state-of-the-art, next-generation, transformative, game-changing, powerful, advanced, smart, intelligent, strategic, tailored, customized, end-to-end, full-service, results-driven, data-driven
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT COUNTS AS VALUE ADDITION (vs. paraphrasing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+✗ DECORATION (paraphrase — FORBIDDEN):
+   "Search visibility" → "high-intent search visibility"
+   (Added adjective. No new information. Same vague claim.)
+
+✗ SYNONYM SWAP (paraphrase — FORBIDDEN):
+   "Immediate search visibility" → "Instant search presence"
+   (Changed words. Same meaning. Zero new information.)
+
+✓ INFORMATION SUBSTITUTION (required):
+   "Immediate search visibility" → "First-page in 14 days"
+   (Same word count. Replaced vague claim with measurable outcome.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+ABSOLUTE RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Word count stays the same (±5%) — design layout is sacred
+2. Every word must earn its place by carrying information
+3. SUBSTITUTE, do not expand. SUBSTITUTE, do not paraphrase.
+4. If you find yourself writing a synonym of the original — STOP, delete, write something the original did not say.
+5. If a sentence keeps the same vague claim with different words, it failed. Rewrite it with a number, a scenario, or a specific tactic.
+6. Every bullet point and short claim must contain at least ONE of: a number, a timeframe, a named segment, a specific tactic, or a named tool. If it doesn't — replace it.`;
 
         // ═══════════════════════════════════════════════════════════════
         //  FRESH REWRITE MODE
@@ -1398,6 +1465,8 @@ RULE 5 — SELF-AUDIT BEFORE EACH SECTION
 Before writing each section, ask yourself: "If I had never seen the reference, what would I write here?" That is what you write.
 
 ${wcBlock}
+
+${valueDensityBlock}
 
 ═══════════════════════════════════
 CONTENT SPECIFICATIONS
@@ -1524,10 +1593,12 @@ Output must be publish-ready. Every word original. Every section matched to the 
 
 Your job: REWRITE the content below to be the single best page on the internet for the primary keyword. Keep the EXACT same structure as the original — same sections, same headings, same order. Only the words inside each section change.
 
-\${wordCountBlock}
+${wcBlock}
+
+${valueDensityBlock}
 
 PRIMARY KEYWORD: "${keyword}"
-SECONDARY / LSI KEYWORDS: ${secondaryKeywords || 'none specified'}
+SECONDARY / LSI KEYWORDS: ${secKw || 'none specified'}
 PAGE TYPE: ${pageInfo.label}
 TARGET AUDIENCE: ${audience || 'general audience'}
 
